@@ -95,6 +95,27 @@ namespace TxLoadMod
 			Apply(fam, body);
 		}
 
+		// Entering a game (new game / loading a save) starts from a clean slate: forget every TX_LOAD
+		// override and reload the original texts, which are otherwise still sitting overwritten in memory.
+		internal static void ResetForNewGame()
+		{
+			if (Registry.Count == 0)
+			{
+				return;
+			}
+			int n = Registry.Count;
+			Registry.Clear();
+			try
+			{
+				TX.reloadTx(false);
+			}
+			catch (Exception ex)
+			{
+				LogError("TX_LOAD reset: reloadTx failed: " + ex);
+			}
+			LogInfo("TX_LOAD: cleared " + n.ToString() + " override(s) on entering game.");
+		}
+
 		internal static void ReapplyAll()
 		{
 			for (int i = 0; i < Registry.Count; i++)
@@ -204,6 +225,15 @@ namespace TxLoadMod
 			Core.Handle(rER as CsvReader);
 			__result = true;
 			return false;
+		}
+	}
+
+	[HarmonyPatch(typeof(SceneGame), "Awake")]
+	internal static class PatchSceneGameAwake
+	{
+		private static void Prefix()
+		{
+			Core.ResetForNewGame();
 		}
 	}
 

@@ -24,6 +24,8 @@ TX_BOARD my_key
 
 免加载器版不修改任何原版文件，可以和 BepInEx / Polaris 共存：检测到 BepInEx 时会等它启动完成再生效；已加载 BepInEx 插件版时自动闲置，不会重复打补丁。
 
+`TX_LOAD` 的覆盖在整个游戏会话内有效；每次进入游戏（新游戏 / 读档）时会清空并恢复原文本。
+
 日志在 `TxLoad/log.txt`。环境变量 `TXLOAD_DISABLE=1` 可临时禁用。
 
 ## 平台
