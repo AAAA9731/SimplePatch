@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>TxLoadBoot</AssemblyName>
+    <RootNamespace>TxLoadBoot</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>none</DebugType>
+    <GameDir Condition="'$(GameDir)'==''">C:\Users\Administrator\Downloads\ZzqoQrtW_AliceInCradle Win ver030i\AliceInCradle Win ver030\AliceInCradle_ver030</GameDir>
+    <Managed>$(GameDir)\AliceInCradle_Data\Managed</Managed>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Shared/Core.cs" />
+    <Reference Include="lib\0Harmony.dll" Private="false" />
+    <Reference Include="lib\MonoMod.Utils.dll" Private="false" />
+    <Reference Include="lib\MonoMod.RuntimeDetour.dll" Private="false" />
+    <Reference Include="lib\Mono.Cecil.dll" Private="false" />
+    <Reference Include="$(Managed)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="$(Managed)\unsafeAssem.dll" Private="false" />
+    <Reference Include="$(Managed)\better.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.CoreModule.dll" Private="false" />
+  </ItemGroup>
+</Project>

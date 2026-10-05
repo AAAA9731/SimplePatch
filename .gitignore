@@ -1,0 +1,10 @@
+# local test copies of the game (never publish)
+_test/
+bin/
+obj/
+out/
+*.obj
+*.exp
+*.lib
+# build tooling, restored separately
+TxLoadBoot/tools/
