@@ -77,7 +77,7 @@ namespace SimplePatch
 					if (p.Install(new Harmony(HarmonyIdPrefix + p.Name)))
 					{
 						ok++;
-						LogInfo("[" + p.Name + "] installed: " + p.Description);
+						LogInfo("[" + p.Name + "] installed");
 					}
 					else
 					{

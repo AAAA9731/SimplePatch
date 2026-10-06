@@ -27,7 +27,6 @@ namespace SimplePatch
 			h.CreateClassProcessor(typeof(PatchRead)).Patch();
 			h.CreateClassProcessor(typeof(PatchSceneGameAwake)).Patch();
 			h.CreateClassProcessor(typeof(PatchReloadTx)).Patch();
-			PatchHost.LogInfo("TX_LOAD installed. Command: TX_LOAD <<<EOF [family] ... EOF;");
 			return true;
 		}
 	}
