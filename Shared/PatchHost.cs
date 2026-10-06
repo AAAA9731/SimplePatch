@@ -19,9 +19,28 @@ namespace SimplePatch
 	{
 		public const string HarmonyIdPrefix = "local.aic.simplepatch.";
 
-		public static Action<string> LogInfo = delegate { };
-		public static Action<string> LogWarn = delegate { };
-		public static Action<string> LogError = delegate { };
+		// Sinks, set by the front-ends. Patches log through LogInfo/LogWarn/LogError, which drop a message
+		// identical to the previous one (event commands run in both the cache-read and the run phase).
+		public static Action<string> SinkInfo = delegate { };
+		public static Action<string> SinkWarn = delegate { };
+		public static Action<string> SinkError = delegate { };
+
+		private static string lastMsg;
+
+		private static bool Repeated(string kind, string s)
+		{
+			string key = kind + s;
+			if (key == lastMsg)
+			{
+				return true;
+			}
+			lastMsg = key;
+			return false;
+		}
+
+		public static void LogInfo(string s) { if (!Repeated("I", s)) SinkInfo(s); }
+		public static void LogWarn(string s) { if (!Repeated("W", s)) SinkWarn(s); }
+		public static void LogError(string s) { if (!Repeated("E", s)) SinkError(s); }
 
 		// Front-ends set this to decide per patch (by IPatch.Name) whether it should be installed.
 		public static Func<string, bool> IsEnabled = name => true;

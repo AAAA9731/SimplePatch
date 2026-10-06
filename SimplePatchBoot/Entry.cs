@@ -26,9 +26,9 @@ namespace SimplePatchBoot
 						return;
 					}
 				}
-				SimplePatch.PatchHost.LogInfo = w;
-				SimplePatch.PatchHost.LogWarn = delegate (string s) { w("WARN " + s); };
-				SimplePatch.PatchHost.LogError = delegate (string s) { w("ERROR " + s); };
+				SimplePatch.PatchHost.SinkInfo = w;
+				SimplePatch.PatchHost.SinkWarn = delegate (string s) { w("WARN " + s); };
+				SimplePatch.PatchHost.SinkError = delegate (string s) { w("ERROR " + s); };
 				SimplePatch.TxLoadCore.SelfTestEnabled = File.Exists(Path.Combine(dir, "selftest"));
 				HashSet<string> off = ReadDisabled(Path.Combine(dir, "patches.txt"));
 				SimplePatch.PatchHost.IsEnabled = name => !off.Contains(name);

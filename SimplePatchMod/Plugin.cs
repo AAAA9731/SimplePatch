@@ -21,9 +21,9 @@ namespace SimplePatchMod
 					return;
 				}
 			}
-			PatchHost.LogInfo = (s => base.Logger.LogInfo(s));
-			PatchHost.LogWarn = (s => base.Logger.LogWarning(s));
-			PatchHost.LogError = (s => base.Logger.LogError(s));
+			PatchHost.SinkInfo = (s => base.Logger.LogMessage(s));
+			PatchHost.SinkWarn = (s => base.Logger.LogWarning(s));
+			PatchHost.SinkError = (s => base.Logger.LogError(s));
 			TxLoadCore.SelfTestEnabled = base.Config.Bind<bool>("Debug", "SelfTest", false, "Run a TX_LOAD parse test on every TX reload and log the result.").Value;
 			Dictionary<string, bool> on = new Dictionary<string, bool>();
 			foreach (IPatch p in PatchHost.Patches)
