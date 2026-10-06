@@ -1,4 +1,4 @@
-// version.dll proxy: forwards the real version.dll and, from a worker thread, boots TxLoad\TxLoadBoot.dll
+// version.dll proxy: forwards the real version.dll and, from a worker thread, boots SimplePatch\SimplePatchBoot.dll
 // inside the game's Mono runtime. No inline hooks and no doorstop files, so it can sit next to BepInEx.
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -25,7 +25,7 @@ typedef void* (*fn_runtime_invoke)(void*, void*, void**, void**);
 static void Log(const wchar_t* dir, const char* msg)
 {
 	wchar_t p[MAX_PATH * 2];
-	wsprintfW(p, L"%s\\TxLoad\\native.log", dir);
+	wsprintfW(p, L"%s\\SimplePatch\\native.log", dir);
 	HANDLE h = CreateFileW(p, FILE_APPEND_DATA, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, 0, NULL);
 	if (h != INVALID_HANDLE_VALUE) {
 		DWORD w; WriteFile(h, msg, (DWORD)lstrlenA(msg), &w, NULL); WriteFile(h, "\r\n", 2, &w, NULL); CloseHandle(h);
@@ -78,9 +78,9 @@ static DWORD WINAPI Worker(LPVOID unused)
 	GetModuleFileNameW(NULL, dir, MAX_PATH * 2);
 	for (i = lstrlenW(dir) - 1; i > 0 && dir[i] != L'\\'; i--) {}
 	dir[i] = 0;
-	wsprintfW(dll, L"%s\\TxLoad\\TxLoadBoot.dll", dir);
+	wsprintfW(dll, L"%s\\SimplePatch\\SimplePatchBoot.dll", dir);
 	if (GetFileAttributesW(dll) == INVALID_FILE_ATTRIBUTES) return 0;
-	if (GetEnvironmentVariableW(L"TXLOAD_DISABLE", NULL, 0) > 0) return 0;
+	if (GetEnvironmentVariableW(L"SIMPLEPATCH_DISABLE", NULL, 0) > 0 || GetEnvironmentVariableW(L"TXLOAD_DISABLE", NULL, 0) > 0) return 0;
 	WideCharToMultiByte(CP_UTF8, 0, dll, -1, dll8, sizeof(dll8), NULL, NULL);
 	WaitForBepInEx(dir);
 
@@ -125,9 +125,9 @@ static DWORD WINAPI Worker(LPVOID unused)
 	int status = 0;
 	void* asm_ = open_(dll8, &status);
 	if (!asm_) { Log(dir, "mono_assembly_open failed"); goto done; }
-	void* klass = cls(get_image(asm_), "TxLoadBoot", "Entry");
+	void* klass = cls(get_image(asm_), "SimplePatchBoot", "Entry");
 	void* method = klass ? getm(klass, "Start", 0) : NULL;
-	if (!method) { Log(dir, "TxLoadBoot.Entry.Start not found"); goto done; }
+	if (!method) { Log(dir, "SimplePatchBoot.Entry.Start not found"); goto done; }
 	void* exc = NULL;
 	invoke(method, NULL, NULL, &exc);
 	Log(dir, exc ? "Entry.Start threw" : "Entry.Start ok");

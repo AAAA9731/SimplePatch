@@ -7,4 +7,4 @@ out/
 *.exp
 *.lib
 # build tooling, restored separately
-TxLoadBoot/tools/
+SimplePatchBoot/tools/

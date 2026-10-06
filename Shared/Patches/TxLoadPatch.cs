@@ -8,32 +8,46 @@ using HarmonyLib;
 using nel;
 using XX;
 
-namespace TxLoadMod
+namespace SimplePatch
 {
-	// Shared logic: adds the event command  TX_LOAD <<<EOF [family] ... EOF;
+	// Patch "TxLoad": adds the event command  TX_LOAD <<<EOF [family] ... EOF;
 	// The heredoc body is plain localization "tx*.txt" syntax and is fed to the game's own parser (TX.readTexts).
-	public static class Core
+	public sealed class TxLoadPatch : IPatch
 	{
-		public const string HarmonyId = "local.aic.txloadmod";
-		public static Action<string> LogInfo = delegate { };
-		public static Action<string> LogWarn = delegate { };
-		public static Action<string> LogError = delegate { };
+		public string Name { get { return "TxLoad"; } }
+		public string Description { get { return "Adds the event command TX_LOAD <<<EOF ... EOF; (inline tx*.txt text)."; } }
+
+		public bool Install(Harmony h)
+		{
+			if (!TxLoadCore.Prepare())
+			{
+				return false;
+			}
+			h.CreateClassProcessor(typeof(PatchCacheRead)).Patch();
+			h.CreateClassProcessor(typeof(PatchRead)).Patch();
+			h.CreateClassProcessor(typeof(PatchSceneGameAwake)).Patch();
+			h.CreateClassProcessor(typeof(PatchReloadTx)).Patch();
+			PatchHost.LogInfo("TX_LOAD installed. Command: TX_LOAD <<<EOF [family] ... EOF;");
+			return true;
+		}
+	}
+
+	internal static class TxLoadCore
+	{
 		public static bool SelfTestEnabled;
 
 		private static readonly List<KeyValuePair<string, string>> Registry = new List<KeyValuePair<string, string>>();
 		private static MethodInfo MiReadTexts;
 		private static readonly Regex RegSection = new Regex(@"^/\*\s*_{3}\s*(\S+)", RegexOptions.Compiled);
 
-		public static bool Install()
+		public static bool Prepare()
 		{
 			MiReadTexts = AccessTools.Method(typeof(TX), "readTexts", null, null);
 			if (MiReadTexts == null)
 			{
-				LogError("TX.readTexts not found; TX_LOAD disabled.");
+				PatchHost.LogError("TX.readTexts not found; TX_LOAD disabled.");
 				return false;
 			}
-			new Harmony(HarmonyId).PatchAll(typeof(Core).Assembly);
-			LogInfo("TX_LOAD installed. Command: TX_LOAD <<<EOF [family] ... EOF;");
 			return true;
 		}
 
@@ -43,7 +57,7 @@ namespace TxLoadMod
 			string head = (r != null) ? r._1 : null;
 			if (head == null || !head.StartsWith("<<<", StringComparison.Ordinal))
 			{
-				LogWarn("TX_LOAD needs a here document: TX_LOAD <<<EOF");
+				PatchHost.LogWarn("TX_LOAD needs a here document: TX_LOAD <<<EOF");
 				return;
 			}
 			string term = head.Substring(3);
@@ -75,7 +89,7 @@ namespace TxLoadMod
 			}
 			if (!closed)
 			{
-				LogWarn("TX_LOAD: missing terminator '" + term + "'");
+				PatchHost.LogWarn("TX_LOAD: missing terminator '" + term + "'");
 			}
 			string body = string.Join("\n", lines.ToArray());
 			KeyValuePair<string, string> item = new KeyValuePair<string, string>(fam, body);
@@ -111,9 +125,9 @@ namespace TxLoadMod
 			}
 			catch (Exception ex)
 			{
-				LogError("TX_LOAD reset: reloadTx failed: " + ex);
+				PatchHost.LogError("TX_LOAD reset: reloadTx failed: " + ex);
 			}
-			LogInfo("TX_LOAD: cleared " + n.ToString() + " override(s) on entering game.");
+			PatchHost.LogInfo("TX_LOAD: cleared " + n.ToString() + " override(s) on entering game.");
 		}
 
 		internal static void ReapplyAll()
@@ -147,7 +161,7 @@ namespace TxLoadMod
 				MiReadTexts.Invoke(null, new object[] { body, kv.Value });
 				n++;
 			}
-			LogInfo("TX_LOAD: " + keys.Length.ToString() + " key(s) -> " + n.ToString() + " family(ies)" + ((fam != null) ? (" [" + fam + "]") : ""));
+			PatchHost.LogInfo("TX_LOAD: " + keys.Length.ToString() + " key(s) -> " + n.ToString() + " family(ies)" + ((fam != null) ? (" [" + fam + "]") : ""));
 		}
 
 		private static string[] ExtractKeys(string body)
@@ -187,13 +201,13 @@ namespace TxLoadMod
 			{
 				CsvReader r = new CsvReader("TX_LOAD <<<EOF\n&&modtest hello world\n/* ___ modtest2 ___ */\nline1\nline2\nEOF;", CsvReader.RegOnlySpace, false);
 				r.read();
-				LogInfo("SelfTest: cmd=" + r.cmd + " _1=" + r._1);
+				PatchHost.LogInfo("SelfTest: cmd=" + r.cmd + " _1=" + r._1);
 				Handle(r);
-				LogInfo("SelfTest: modtest=[" + TX.Get("modtest", "<missing>") + "] modtest2=[" + TX.Get("modtest2", "<missing>").Replace("\n", "|") + "]");
+				PatchHost.LogInfo("SelfTest: modtest=[" + TX.Get("modtest", "<missing>") + "] modtest2=[" + TX.Get("modtest2", "<missing>").Replace("\n", "|") + "]");
 			}
 			catch (Exception ex)
 			{
-				LogError("SelfTest failed: " + ex);
+				PatchHost.LogError("SelfTest failed: " + ex);
 			}
 		}
 	}
@@ -207,7 +221,7 @@ namespace TxLoadMod
 			{
 				return true;
 			}
-			Core.Handle(rER);
+			TxLoadCore.Handle(rER);
 			__result = 1;
 			return false;
 		}
@@ -222,7 +236,7 @@ namespace TxLoadMod
 			{
 				return true;
 			}
-			Core.Handle(rER as CsvReader);
+			TxLoadCore.Handle(rER as CsvReader);
 			__result = true;
 			return false;
 		}
@@ -233,7 +247,7 @@ namespace TxLoadMod
 	{
 		private static void Prefix()
 		{
-			Core.ResetForNewGame();
+			TxLoadCore.ResetForNewGame();
 		}
 	}
 
@@ -242,10 +256,10 @@ namespace TxLoadMod
 	{
 		private static void Postfix()
 		{
-			Core.ReapplyAll();
-			if (Core.SelfTestEnabled)
+			TxLoadCore.ReapplyAll();
+			if (TxLoadCore.SelfTestEnabled)
 			{
-				Core.RunSelfTest();
+				TxLoadCore.RunSelfTest();
 			}
 		}
 	}

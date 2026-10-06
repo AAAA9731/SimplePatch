@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>TxLoadBoot</AssemblyName>
-    <RootNamespace>TxLoadBoot</RootNamespace>
+    <AssemblyName>SimplePatchBoot</AssemblyName>
+    <RootNamespace>SimplePatchBoot</RootNamespace>
     <LangVersion>latest</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>none</DebugType>
@@ -10,7 +10,7 @@
     <Managed>$(GameDir)\AliceInCradle_Data\Managed</Managed>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../Shared/Core.cs" />
+    <Compile Include="../Shared/**/*.cs" />
     <Reference Include="lib\0Harmony.dll" Private="false" />
     <Reference Include="lib\MonoMod.Utils.dll" Private="false" />
     <Reference Include="lib\MonoMod.RuntimeDetour.dll" Private="false" />
