@@ -8,6 +8,18 @@
 |---|---|
 | `TxLoad` | 给事件脚本增加 `TX_LOAD` 命令，可在 `.cmd` 里直接写 `tx*.txt` 格式的文本（见下） |
 | `DebugCursor` | 游戏内 debug 菜单（含事件行调试器）打开时强制显示鼠标，不用再先开菜单 UI |
+| `PicLoad` | 给事件脚本增加 `PIC_LOAD` 命令，从 StreamingAssets 读取自定义 PNG，之后可用 `PIC` 显示（见下） |
+
+### PicLoad
+
+```
+PIC_LOAD <id> <文件名[.png]> [原点x 原点y]
+PIC &1 <id> ...
+```
+
+- 图片放在 `AliceInCradle_Data/StreamingAssets/SimplePatch_pic/` 下（不允许 `..` 和绝对路径）。
+- `<id>` 之后就是 `PIC` / `PIC_B` / `PIC_FILL` 等命令里用的图片名；不能与游戏自带图片重名。默认以图片中心为原点。
+- 同一 id 重复执行会检查文件修改时间，文件变了会重新加载。
 
 ### TxLoad
 

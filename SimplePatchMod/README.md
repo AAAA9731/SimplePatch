@@ -1,6 +1,6 @@
 # SimplePatchMod (BepInEx 6, Mono)
 
-补丁集合的 BepInEx 版，包含 `TxLoad` 与 `DebugCursor`（debug 菜单打开时强制显示鼠标）；各补丁可在 `local.aic.simplepatch.cfg` 的 `[Patches]` 里开关。以下是 `TxLoad` 补丁的说明：
+补丁集合的 BepInEx 版，包含 `TxLoad`、`DebugCursor`（debug 菜单打开时强制显示鼠标）与 `PicLoad`（`PIC_LOAD <id> <文件.png>`，读取 StreamingAssets/SimplePatch_pic 下的 PNG 供 `PIC` 显示）；各补丁可在 `local.aic.simplepatch.cfg` 的 `[Patches]` 里开关。以下是 `TxLoad` 补丁的说明：
 
 
 在 evt 的 .cmd 里用 `<<<EOF` 直接定义 tx*.txt 风格的文本。

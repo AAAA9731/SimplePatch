@@ -197,6 +197,7 @@ namespace SimplePatch
 
 		internal static void RunSelfTest()
 		{
+			PicLoadCore.RunSelfTest();
 			try
 			{
 				CsvReader r = new CsvReader("TX_LOAD <<<EOF\n&&modtest hello world\n/* ___ modtest2 ___ */\nline1\nline2\nEOF;", CsvReader.RegOnlySpace, false);

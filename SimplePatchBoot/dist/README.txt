@@ -9,4 +9,5 @@
 - 开关单个补丁：在 SimplePatch 下新建 patches.txt，每行写 DebugCursor=false 或 TxLoad=false 即禁用该补丁。
 - 环境变量 SIMPLEPATCH_DISABLE=1 可临时禁用。
 DebugCursor：debug 菜单打开时强制显示鼠标。
+PicLoad：PIC_LOAD <id> <文件名[.png]> [原点x 原点y]，从 AliceInCradle_Data\StreamingAssets\SimplePatch_pic\ 读取 PNG，之后用 PIC &1 <id> 显示。
 TxLoad 命令：TX_LOAD <<<EOF [语言key] ... EOF;（详见 SimplePatchMod\README.md）

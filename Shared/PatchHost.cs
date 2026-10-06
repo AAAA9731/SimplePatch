@@ -30,6 +30,7 @@ namespace SimplePatch
 		{
 			new TxLoadPatch(),
 			new DebugCursorPatch(),
+			new PicLoadPatch(),
 		};
 
 		public static void InstallAll()
